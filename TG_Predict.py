@@ -1,10 +1,4 @@
-# ============================================================
-#  Machine Learning–Based Modeling of Postprandial TG Response
-#  Complete Pipeline: Data, ML, Calibration, Explainability
-#  (คุณรันสคริปต์นี้ทีละเซลได้เลย)
-# ============================================================
 
-# ---------- STEP 0: Imports & Setup ----------
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,16 +16,16 @@ from sklearn.metrics import (
     roc_curve
 )
 
-# ทำให้ matplotlib แสดงสวยขึ้น (ถ้าไม่อยากได้ก็ลบได้)
+
 plt.style.use("default")
 
-# บางเวอร์ชันของ shap ต้องการ np.bool
+
 if not hasattr(np, "bool"):
     np.bool = bool
 
 
-# ---------- STEP 1: Load Dataset ----------
-# แก้ path ตามชื่อไฟล์ของคุณ
+
+
 DATA_PATH = "WBV_TCR_ICBCB2026_Synthetic_1500_precise_v2 (2).csv"
 
 df = pd.read_csv(DATA_PATH)
@@ -41,8 +35,7 @@ print("Columns:", df.columns.tolist())
 print(df.head())
 
 
-# ---------- STEP 2: Create Outcome Label (High_TG4h) ----------
-# ใช้ 75th percentile ของ TG4h เป็น cutoff สำหรับ "High response"
+
 tg4h_q75 = df["TG4h"].quantile(0.75)
 print("\n75th percentile of TG4h:", tg4h_q75)
 
@@ -51,7 +44,7 @@ print("\nLabel distribution (High_TG4h):")
 print(df["High_TG4h"].value_counts())
 print(df["High_TG4h"].value_counts(normalize=True))
 
-# ---------- STEP 3: Define Features & Preprocessing ----------
+
 feature_cols = [
     "Sex", "Age", "Hematocrit", "TotalProtein",
     "WBV", "TG0h", "HDL", "LDL", "BMI"
@@ -74,7 +67,7 @@ print("\nNumeric features:", num_features)
 print("Categorical features:", cat_features)
 
 
-# ---------- STEP 4: Cross-Validated Performance of 3 Models ----------
+
 models = {
     "LogisticRegression": LogisticRegression(
         max_iter=1000,
@@ -138,21 +131,21 @@ print("\n=== Cross-validated performance ===")
 print(results_df)
 
 
-# ---------- STEP 5: Fit Best Model with Calibration (for plots) ----------
+
 best_name = results_df.iloc[0]["Model"]
 print("\nBest model by AUROC:", best_name)
 best_clf = models[best_name]
 
-# Split train/test เพื่อให้ calibration ไม่ optimistic เกินไป
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, stratify=y, random_state=42
 )
 
-# Pipeline พื้นฐาน
+
 base_pipe = Pipeline(steps=[("preprocess", preprocess),
                             ("clf", best_clf)])
 
-# ฟิตเบื้องต้นบน train
+
 base_pipe.fit(X_train, y_train)
 
 # Calibrate model (isotonic) บน train (cv=5)
@@ -161,7 +154,7 @@ calibrated_clf = CalibratedClassifierCV(
 )
 calibrated_clf.fit(X_train, y_train)
 
-# Predict บน test set
+
 probas_test = calibrated_clf.predict_proba(X_test)[:, 1]
 preds_test = (probas_test >= 0.5).astype(int)
 
@@ -176,7 +169,7 @@ print(f"Accuracy: {acc_test:.3f}")
 print(f"F1      : {f1_test:.3f}")
 print(f"Brier   : {brier_test:.3f}")
 
-# ROC curve
+
 fpr, tpr, _ = roc_curve(y_test, probas_test)
 
 plt.figure()
@@ -189,7 +182,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-# Calibration curve
+
 prob_true, prob_pred = calibration_curve(y_test, probas_test, n_bins=10)
 
 plt.figure()
@@ -203,7 +196,7 @@ plt.tight_layout()
 plt.show()
 
 
-# ---------- STEP 6: Descriptive Statistics & Phenotype Analysis ----------
+
 numeric_cols = [
     "Age", "Hematocrit", "TotalProtein", "WBV",
     "TG0h", "TG4h", "TCR", "HDL", "LDL", "BMI"
@@ -213,7 +206,7 @@ print("\n=== Descriptive statistics by phenotype (mean ± std) ===")
 grouped_desc = df.groupby("High_TG4h")[numeric_cols].agg(["mean", "std"])
 print(grouped_desc)
 
-# Correlation matrix
+
 corr = df[numeric_cols].corr()
 
 plt.figure(figsize=(8, 6))
@@ -225,7 +218,7 @@ plt.title("Correlation Matrix of Key Variables")
 plt.tight_layout()
 plt.show()
 
-# Histogram TG4h by phenotype
+
 plt.figure()
 plt.hist(df.loc[df["High_TG4h"] == 0, "TG4h"],
          bins=20, alpha=0.5, label="Normal response")
@@ -239,15 +232,14 @@ plt.tight_layout()
 plt.show()
 
 
-# ---------- STEP 7: SHAP Explainability (Global Feature Importance) ----------
+
 try:
     import shap
 except ImportError:
-    # ถ้า environment ยังไม่มี shap ให้ uncomment บรรทัดนี้
-    # !pip install shap
+    
     import shap
 
-# ใช้ Logistic Regression เพื่อความง่ายในการตีความ
+
 shap_pipe = Pipeline(steps=[("preprocess", preprocess),
                             ("clf", LogisticRegression(
                                 max_iter=1000,
@@ -257,25 +249,25 @@ shap_pipe = Pipeline(steps=[("preprocess", preprocess),
 
 shap_pipe.fit(X, y)
 
-# ดึง matrix หลัง preprocess
+
 X_trans = shap_pipe.named_steps["preprocess"].transform(X)
 clf_lr  = shap_pipe.named_steps["clf"]
 
-# Feature names หลัง OneHot (เช่น Sex_Male เป็นต้น)
+
 ohe = shap_pipe.named_steps["preprocess"].named_transformers_["cat"]
 cat_feature_names = ohe.get_feature_names_out(cat_features)
 all_feature_names = list(cat_feature_names) + num_features
 
-# สร้าง explainer + SHAP values
+
 explainer = shap.LinearExplainer(clf_lr, X_trans)
 shap_values = explainer.shap_values(X_trans)
 
-# Summary plot (global importance)
+
 shap.summary_plot(
     shap_values, X_trans,
     feature_names=all_feature_names,
     show=True
 )
 
-# (Optional) ถ้าอยากได้ dependence plot ของ TG0h:
 shap.dependence_plot("TG0h", shap_values, X_trans,feature_names=all_feature_names)
+
