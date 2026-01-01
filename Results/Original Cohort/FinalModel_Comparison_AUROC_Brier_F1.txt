@@ -1,0 +1,10 @@
+=== Uncalibrated ===
+AUROC: 0.7755735594760355
+Brier: 0.1878042525690189
+
+=== Calibrated ===
+Method: isotonic | AUROC: 0.7897 | Brier: 0.1468
+Method: sigmoid  | AUROC: 0.7756 | Brier: 0.1545
+
+>>> FINAL MODEL uses calibration: isotonic
+

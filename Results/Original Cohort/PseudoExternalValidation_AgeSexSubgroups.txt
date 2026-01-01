@@ -1,0 +1,24 @@
+
+print("=== Pseudo-external validation: Sex-based ===")
+train_eval_pseudo_external(mask_male, mask_female, desc="Train Male, Test Female")
+train_eval_pseudo_external(mask_female, mask_male, desc="Train Female, Test Male")
+
+=== Pseudo-external validation: Age-based ===
+[Train <55, Test ≥55] n_train=858, n_test=642
+  AUROC = 0.816
+  Brier = 0.194
+
+[Train ≥55, Test <55] n_train=642, n_test=858
+  AUROC = 0.770
+  Brier = 0.202
+
+=== Pseudo-external validation: Sex-based ===
+[Train Male, Test Female] n_train=1500, n_test=774
+  AUROC = 0.805
+  Brier = 0.185
+
+[Train Female, Test Male] n_train=774, n_test=1500
+  AUROC = 0.801
+  Brier = 0.182
+
+(np.float64(0.8006091851851852), np.float64(0.18190412623327462))

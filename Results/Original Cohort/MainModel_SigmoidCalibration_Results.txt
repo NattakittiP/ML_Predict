@@ -1,0 +1,4 @@
+Main threshold: 0.75
+Main model   : logreg_elastic
+AUROC (CV)   : 0.8007822222222224
+Cutoff TG4h  : 528.2654064623237

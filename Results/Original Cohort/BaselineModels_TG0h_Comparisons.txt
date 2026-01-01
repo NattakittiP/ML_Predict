@@ -1,0 +1,11 @@
+=== Baseline 1: Simple TG0h cutoff ===
+TG0h cutoff (train 75th percentile) = 1010.68 mg/dL
+AUROC  = 0.681
+Brier  = 0.182
+
+=== Baseline 2: Univariate Logistic Regression (TG0h only) ===
+AUROC   = 0.781
+Brier   = 0.186
+F1      = 0.520
+Recall  = 0.617
+Precision = 0.450

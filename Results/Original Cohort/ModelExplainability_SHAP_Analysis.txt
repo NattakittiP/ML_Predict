@@ -1,0 +1,7 @@
+=== Sex Subgroups ===
+Male: n=198, AUROC=0.782
+Female: n=177, AUROC=0.799
+
+=== Age Subgroups ===
+Age < 55: n=223, AUROC=0.746
+Age ≥ 55: n=152, AUROC=0.847

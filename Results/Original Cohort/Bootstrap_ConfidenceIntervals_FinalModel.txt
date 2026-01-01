@@ -1,0 +1,4 @@
+=== Bootstrap 95% CI (Final Calibrated Model) ===
+AUROC mean = 0.791, 95% CI = [0.743, 0.836]
+Brier mean = 0.146, 95% CI = [0.128, 0.166]
+n_bootstrap used = 1000

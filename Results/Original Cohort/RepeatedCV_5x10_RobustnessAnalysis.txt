@@ -1,0 +1,4 @@
+=== Repeated Stratified CV (5-fold x 10 repeats) ===
+Total folds: 50
+AUROC: mean=0.800, std=0.023, min=0.709, max=0.844
+Brier: mean=0.186, std=0.012, min=0.165, max=0.230

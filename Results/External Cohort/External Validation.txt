@@ -1,0 +1,22 @@
+=== INTERNAL (Cross-Validation on Training Synthetic) ===
+AUROC      : 1.000
+Brier score: 0.010
+Accuracy   : 0.997
+Precision  : 0.997
+Recall     : 0.989
+F1-score   : 0.993
+
+Fitting final model on full training data...
+Model saved to: midm_elastic_net_model.joblib
+
+Loading external synthetic cohort...
+
+=== EXTERNAL (Independent Synthetic Cohort) ===
+AUROC      : 1.000
+Brier score: 0.043
+Accuracy   : 0.938
+Precision  : 0.801
+Recall     : 1.000
+F1-score   : 0.890
+
+Plotting ROC and calibration curves for external cohort...
