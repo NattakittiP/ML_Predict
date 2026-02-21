@@ -1,2 +1,0 @@
-Bootstrap samples AUROC: n=1000, mean=0.791
-Bootstrap samples Brier: n=1000, mean=0.146
