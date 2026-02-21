@@ -1,0 +1,12 @@
+=== Comparison ===
+compare_calibration
+
+Top (best) by unweighted composite score (if available):
+  method  score_total_unweighted
+isotonic               -0.357839
+ sigmoid               -0.324050
+
+Key metrics (if present):
+  method  auroc_mean  brier_mean  ap_mean  cal_slope  cal_intercept  ece_10bin_unweighted
+isotonic    0.915529    0.088584 0.838326    0.02973       0.323981              0.013181
+ sigmoid    0.915230    0.088350 0.844382    0.12306       0.452898              0.017374
