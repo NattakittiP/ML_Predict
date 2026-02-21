@@ -1,325 +1,400 @@
+# ML_Predict
 
-# ML_Predict: A High-Fidelity Pipeline for Threshold-Based TG4h Risk Classification
+## A High-Fidelity, Leakage-Controlled Pipeline for Threshold-Based TG4h Risk Classification
 
-This repository provides a fully reproducible, research-grade machine learning pipeline for predicting postprandial triglyceride response phenotypes using multi-threshold TG4h classification, calibrated machine learning models, and advanced model interpretability.  
-The entire workflow (data cleaning → preprocessing → model zoo → threshold scanning → calibrated final model → explainability → robustness testing → baseline comparisons → pseudo-external validation) is implemented in a single script: **ML_Predict.py**.
+ML_Predict is a fully reproducible, research-grade machine learning
+framework for modeling postprandial triglyceride response phenotypes
+using multi-threshold TG4h classification, calibrated logistic
+regression models, and structured interpretability analysis.
 
-The design philosophy follows **Q1-level methodological transparency** while keeping the documentation readable for practitioners (Hybrid Academic + Engineering style).
+The repository implements a coordinated, audit-ready workflow spanning:
 
----
+-   Nested cross-validation with strict leakage control
+-   Multi-threshold phenotype sensitivity
+-   Probability calibration (OOF + held-out comparison)
+-   SHAP and Partial Dependence explainability
+-   Bootstrap reliability estimation
+-   Decision Curve Analysis
+-   Demographic pseudo-external transport
+-   External synthetic stress testing
+-   WBV misspecification sensitivity analysis
 
-## 1. Overview
+The design philosophy follows Q1-level methodological rigor, while
+maintaining documentation clarity suitable for both academic researchers
+and applied ML practitioners.
 
-`ML_Predict.py` implements a comprehensive ML workflow for analyzing the relationship between fasting biomarkers and postprandial triglyceride response (TG4h).  
-The script supports:
+------------------------------------------------------------------------
 
-- Multi-threshold phenotype construction (TG4h 60th → 90th percentile)
-- Extensive model zoo with 8 classifiers
-- 5-fold cross-validation across thresholds
-- Selection of the optimal threshold + model
-- Train/test split with probability calibration
-- SHAP-based explainability
-- Partial Dependence analysis (1D/2D)
-- Bootstrap confidence intervals
-- Subgroup performance analysis (sex, age)
-- Pseudo-external validation
-- TG0h-only baseline comparisons
-- Decision Curve Analysis
-- Robustness via Repeated Stratified CV (5×10)
+# 1. Overview
 
-This pipeline is optimized for **high scientific rigor**, with clear reproducibility steps, structured flow, and domain-specific preprocessing.
+The core pipeline (run_rebuild_pipeline_Rerun.py) implements a
+comprehensive, leakage-controlled ML workflow to model the relationship
+between fasting biomarkers and postprandial triglyceride response
+(TG4h).
 
----
+Supporting scripts:
 
-## 2. Dataset Assumptions
+-   summary_table_regen_Rerun.py
+-   External_validation_Rerun.py
+-   Sensitivity_of_the_null_Association_Rerun.py
 
-The script expects a CSV containing fasting biomarkers and TG4h measurement.  
-Default assumptions follow the structure used in cardiometabolic studies:
+Together, these provide a complete end-to-end framework for:
 
-- **Features**
-  - Age  
-  - Sex (Male/Female)  
-  - Hematocrit  
-  - TotalProtein  
-  - WBV (Whole Blood Viscosity)  
-  - TG0h (fasting TG)  
-  - HDL  
-  - LDL  
-  - BMI  
+-   Multi-threshold phenotype construction (60th--90th percentiles;
+    primary focus: 75th)
+-   Nested 5×5 cross-validation
+-   Threshold sensitivity analysis
+-   Probability calibration (isotonic + sigmoid)
+-   SHAP explainability
+-   Partial Dependence analysis (1D & 2D)
+-   Bootstrap confidence intervals (1,000 resamples)
+-   Repeated stratified CV (5×10)
+-   TG0h-only baseline comparisons
+-   Decision Curve Analysis
+-   Demographic pseudo-external transfer testing
+-   External synthetic cohort stress testing
+-   WBV misspecification sensitivity analysis
 
-- **Target**
-  - TG4h (postprandial triglycerides measured at 4 hours)
+All phenotype definitions and preprocessing steps are strictly
+training-fold confined to eliminate information leakage.
 
-Required columns are validated on load.
+------------------------------------------------------------------------
 
----
+# 2. Dataset Assumptions
 
-## 3. Pipeline Summary
+All scripts expect a CSV file (e.g., Dataset.csv) containing fasting
+biomarkers and TG4h measurements.
 
-The workflow follows the schematic below:
+## Required Features
 
-```
-Load Dataset
-     ↓
-Clean Missing Data
-     ↓
-Define TG4h Thresholds (60–90%)
-     ↓
-Create Binary Labels for Each Threshold
-     ↓
-Model Zoo (8 ML Models)
-     ↓
-5-fold CV Performance Comparison
-     ↓
-Select Best Threshold + Best Model
-     ↓
-Train/Test Split
-     ↓
-Probability Calibration (Isotonic/Sigmoid)
-     ↓
-Final Calibrated Model
-     ↓
-Explainability (SHAP + PDP)
-     ↓
-Bootstrapping (AUROC, Brier)
-     ↓
-Baseline Comparisons (TG0h-only)
-     ↓
-Pseudo-external Validation
-     ↓
-Repeated CV (5×10) Robustness Check
-```
+  Category         Variables
+  ---------------- --------------------------
+  Demographic      Age, Sex
+  Hematologic      Hematocrit, TotalProtein
+  Derived          WBV
+  Lipid            TG0h, HDL, LDL
+  Anthropometric   BMI
+  Target           TG4h
 
----
+## WBV Derivation
 
-## 4. Model Zoo
+WBV is computed using the de Simone low-shear surrogate:
 
-The script benchmarks the following classifiers:
+WBV = 0.12 × Hct + 0.17 × TotalProtein − 0.3519
 
-| Model Key | Algorithm | Notes |
-|----------|-----------|-------|
-| `logreg_l2` | Logistic Regression (L2) | Balanced weights, liblinear |
-| `logreg_elastic` | Elastic Net Logistic | L1/L2 mix, saga solver |
-| `rf` | Random Forest | 400 trees, balanced subsample |
-| `gb` | Gradient Boosting | Default GBM |
-| `xgb` | XGBoost | 600 trees, shallow depth, LR=0.03 |
-| `lgbm` | LightGBM | Balanced class weights, 600 trees |
-| `catboost` | CatBoost | Handles categorical features well |
-| `svm_rbf` | RBF SVM | probability=True + balanced class weight |
+TG4h-derived labels are never used as predictors.
 
-Models are wrapped in a unified `Pipeline` with preprocessing.
+Flexible column names are automatically mapped during loading.
 
----
+------------------------------------------------------------------------
 
-## 5. Preprocessing
+# 3. End-to-End Workflow
 
-A rigorous preprocessing block is implemented using scikit-learn’s `ColumnTransformer`:
+Load Dataset\
+      ↓\
+Normalize Sex coding\
+      ↓\
+Derive WBV and TGR\
+      ↓\
+Physiologic exclusions\
+      ↓\
+Define TG4h phenotype (primary: 75th percentile)\
+      ↓\
+Nested CV (5×5; fold-specific cutoff)\
+      ↓\
+OOF predictions + metrics\
+      ↓\
+Threshold sensitivity analysis\
+      ↓\
+Calibration (OOF + held-out comparison)\
+      ↓\
+Explainability (SHAP + PDP)\
+      ↓\
+Bootstrap CI (1,000×)\
+      ↓\
+Repeated CV (5×10)\
+      ↓\
+Baseline comparisons\
+      ↓\
+Decision Curve Analysis\
+      ↓\
+Demographic pseudo-external transfer\
+      ↓\
+External synthetic stress test\
+      ↓\
+WBV misspecification sensitivity\
+      ↓\
+LaTeX-ready outputs
 
-- **Numeric features** → `StandardScaler`
-- **Categorical features** → `OneHotEncoder(drop="first")`
+All TG4h thresholds are computed from training indices only within CV
+splits.
 
-All transformations occur *inside the pipeline* to prevent leakage.
+------------------------------------------------------------------------
 
----
+# 4. Model Family
 
-## 6. Multi-Threshold TG4h Classification
+## Primary Model
 
-The script evaluates thresholds:
+L2-Penalized Logistic Regression
 
-```
-0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90
-```
+-   class_weight="balanced"
+-   solver="lbfgs"
+-   Nested hyperparameter tuning over C
+-   Fully wrapped in scikit-learn Pipeline
+
+## Optional Comparison Models
+
+  Key       Model
+  --------- ---------------------------
+  svm_rbf   RBF SVM
+  rf        Random Forest (600 trees)
+
+The manuscript-aligned emphasis remains on the interpretable
+L2-penalized logistic regression.
+
+------------------------------------------------------------------------
+
+# 5. Preprocessing
+
+All preprocessing occurs within ColumnTransformer blocks inside CV
+pipelines.
+
+## Numeric
+
+-   Median imputation
+-   Fold-specific winsorization (1--99%)
+-   StandardScaler
+
+## Categorical
+
+-   Most frequent imputation
+-   OneHotEncoder (drop="first")
+
+No preprocessing is performed outside CV folds.
+
+------------------------------------------------------------------------
+
+# 6. Multi-Threshold TG4h Classification
+
+Evaluated percentiles:
+
+60, 70, 75, 80, 90
 
 For each threshold:
-- Compute TG4h percentile  
-- Convert TG4h ≥ cutoff → High responder (1), else (0)
-- Run full model zoo
-- Compute 5-fold CV metrics:
-  - AUROC  
-  - Brier  
-  - F1  
-  - Precision  
-  - Recall  
-  - Accuracy  
 
-All results are stored in:
-- `cv_results_all_thresholds.csv`
-- `cv_auroc_summary_pivot.csv`
+-   Compute fold-specific TG4h cutoff
+-   Generate binary phenotype
+-   Run nested CV
+-   Save AUROC, Brier, F1, Precision, Recall, Accuracy
 
-This allows a full methodological audit trail.
+Outputs:
 
----
+-   thresholdsensitivitysummary.csv
+-   thresholdsensitivity.csv
 
-## 7. Model Selection
+------------------------------------------------------------------------
 
-The script identifies the **main threshold** (default = 0.75) and selects the model with the highest mean AUROC.  
-This becomes the **MAIN MODEL** used for all downstream analyses.
+# 7. Primary Phenotype
 
----
+Primary phenotype:\
+TG4h ≥ 75th percentile
 
-## 8. Train/Test Split and Calibration
+Within nested CV:
 
-After selecting the optimal threshold and model:
+-   Cutoff computed from training fold only
+-   Applied to validation fold
+-   AUROC and Brier summarized across outer folds
 
-1. The dataset is split:  
-   - **75% train**  
-   - **25% test**  
-   - Stratified  
-   - Controlled random seed
+This model supports:
 
-2. Calibration methods evaluated:
-   - **Isotonic**
-   - **Platt scaling (sigmoid)**
+-   Nested-CV reporting
+-   Bootstrap CI
+-   Repeated CV
+-   SHAP & PDP analysis
 
-3. Best calibration (lowest Brier score) becomes the **FINAL MODEL**.
+------------------------------------------------------------------------
 
-Probability calibration is essential for medical ML and aligns with Q1 publication standards.
+# 8. Calibration Strategy
 
----
+## Nested CV Calibration
 
-## 9. Evaluation Metrics
+-   CalibratedClassifierCV inside outer folds
+-   OOF calibrated probabilities saved
 
-Evaluation on the held-out test includes:
+## Held-Out 80/20 Comparison
 
-- AUROC  
-- Brier score  
-- Precision, Recall, F1  
-- ROC Curve  
-- Calibration Curve  
-- Calibration slope & intercept  
+-   Stratified split
+-   Isotonic vs sigmoid comparison
+-   Report AUROC, Brier, slope, intercept
 
-These metrics follow TRIPOD and ML reproducibility guidelines.
+Isotonic selected for balanced calibration quality.
 
----
+## External Synthetic Script
 
-## 10. Explainability
+Three-step calibration:
 
-### 10.1 SHAP (KernelExplainer)
+1.  Hard-label training\
+2.  Temperature scaling\
+3.  Isotonic refinement
 
-- Global summary values  
-- TG0h dependence plot  
-- WBV interactions  
-- Feature correlation structure  
+------------------------------------------------------------------------
 
-### 10.2 Partial Dependence (PDP)
+# 9. Evaluation Metrics
 
-- 1D PDP for TG0h, WBV, BMI  
-- 2D PDP for TG0h × BMI  
-- High-resolution PDP for TG0h  
+Across nested CV, held-out splits, and external tests:
 
-These methods quantify both average and interaction effects.
+-   AUROC
+-   Brier score
+-   F1
+-   Precision
+-   Recall
+-   Accuracy
+-   ROC curves
+-   PR curves
+-   Calibration curves
+-   Calibration slope & intercept
 
----
+Outputs saved in CSV, JSON, and figure formats.
 
-## 11. Robustness Testing
+------------------------------------------------------------------------
 
-### 11.1 Bootstrap 95% CI  
-For the final calibrated model:
-- Approx. 1000 bootstrap samples  
-- AUROC mean + CI  
-- Brier mean + CI  
+# 10. Explainability
 
-### 11.2 Repeated Stratified CV (5×10)
+## SHAP
 
-50 folds total, reporting:
-- Mean AUROC ± SD  
-- Min/Max AUROC  
-- Mean Brier ± SD  
+-   Global importance
+-   TG0h dependence
+-   TG0h × WBV interaction
 
-This ensures stability beyond a single train/test split.
+## Partial Dependence
 
----
+-   1D: TG0h, WBV, BMI
+-   2D: TG0h × BMI
 
-## 12. Baseline Models
+All derived from the final full-data LR model.
 
-Two TG0h-only models are built as clinical baselines:
+------------------------------------------------------------------------
 
-| Baseline | Description |
-|----------|-------------|
-| TG0h percentile rule | Threshold using 75th percentile on TG0h |
-| Univariate logistic | TG0h → calibrated logistic regression |
+# 11. Robustness
 
-This demonstrates the added value of the multivariable model.
+## Bootstrap (1,000×)
 
----
+-   AUROC distribution
+-   Brier distribution
+-   Percentile-based 95% CI
 
-## 13. Pseudo-External Validation
+## Repeated Stratified CV (5×10)
 
-Two clinically relevant scenarios:
+-   Mean ± SD
+-   Min / Max
+-   Total evaluated folds
 
-### (A) Train <55 yrs → Test ≥55 yrs  
-### (B) Train Male → Test Female  
+------------------------------------------------------------------------
 
-For each:
-- Train on one demographic  
-- Test on the other  
-- Report AUROC & Brier
+# 12. Baselines
 
-This simulates domain shift and demographic transportability.
+  Baseline               Description
+  ---------------------- ---------------------------
+  TG0h percentile rule   75th percentile threshold
+  TG0h-only logistic     Nested CV univariate LR
 
----
+Used in performance tables and DCA.
 
-## 14. Decision Curve Analysis (DCA)
+------------------------------------------------------------------------
 
-The script computes net benefit across probability thresholds for:
+# 13. Pseudo-External Transport
 
-- Final calibrated model  
-- TG0h logistic baseline  
-- TG0h cutoff rule  
-- Treat-all  
-- Treat-none  
+Demographic transport simulations:
 
-DCA evaluates clinical utility, not just discrimination.
+## Age
 
----
+-   Train \<55 → Test ≥55
+-   Train ≥55 → Test \<55
 
-## 15. Outputs
+## Sex
 
-The script generates:
+-   Train Male → Test Female
+-   Train Female → Test Male
 
-- CV results tables  
-- Train/test evaluation metrics  
-- Calibration statistics  
-- SHAP values  
-- PDP summaries  
-- Bootstrap distributions  
-- Subgroup performance tables  
-- DCA tables  
+Training-derived TG4h cutoff applied to test group.
 
-No figures are required, but these outputs can be formatted into tables for manuscripts.
+Results saved to:\
+pseudoexternaltransfer.csv
 
----
+------------------------------------------------------------------------
 
-## 16. Reproducibility
+# 14. Decision Curve Analysis
 
-To align with Q1 and clinical-AI reproducibility requirements:
+Computed from nested-CV OOF predictions.
 
-- Fixed `RANDOM_STATE = 42`
-- Seeded numpy operations
-- All preprocessing inside pipelines
-- No leakage across folds
-- All thresholds explicitly logged
-- Every model evaluated with identical CV structure
-- Final model calibrated on held-out data
+Models included:
 
-The entire workflow is transparent and repeatable from raw CSV to final performance metrics.
+-   Multivariable LR
+-   TG0h logistic
+-   TG0h percentile rule
+-   Treat-all
+-   Treat-none
 
----
+Probability grid: 0.01--0.99
 
-## 17. Citation
+Outputs:
 
-If using this repository in academic work:
+-   decisioncurve.csv
+-   figdecisioncurve.png
 
-**Piyavechvirat, N.**  
-*ML_Predict: A Calibrated Multi-Threshold Machine Learning Pipeline for Postprandial Lipid Response Analysis.*  
+------------------------------------------------------------------------
+
+# 15. Outputs
+
+Generated artifacts include:
+
+-   nestedcvsummary.json
+-   oofpredictions.csv
+-   thresholdsensitivitysummary.csv
+-   Bootstrap summaries (CSV + JSON)
+-   SHAP/PDP plots
+-   DCA tables
+-   Pseudo-external metrics
+-   WBV sensitivity results
+-   External stress test curves
+-   summarytablerows.tex
+-   summarytablevalues.json
+
+All tables are manuscript-ready.
+
+------------------------------------------------------------------------
+
+# 16. Reproducibility Guarantees
+
+-   Fixed RANDOM_STATE = 42
+-   Seeded NumPy operations
+-   All preprocessing inside pipelines
+-   Training-fold-only threshold computation
+-   Explicit logging of TG4h and TG0h cutoffs
+-   Deterministic bootstrap
+-   Transparent WBV computation
+-   Script-level separation for auditability
+
+From raw CSV to LaTeX tables, the workflow is fully repeatable.
+
+------------------------------------------------------------------------
+
+# 17. Citation
+
+If using this repository:
+
+Piyavechvirat, N.\
+ML_Predict: A Calibrated Multi-Threshold Logistic Regression Pipeline\
+for Postprandial Lipid Response Analysis.\
 GitHub Repository, 2025.
 
----
+------------------------------------------------------------------------
 
-## 18. Contact
+# 18. Contact
 
-Author: **Nattakitti Piyavechvirat**  
-GitHub: https://github.com/NattakittiP  
-For issues, questions, or collaboration proposals, please open an Issue or Pull Request.
+Author: Nattakitti Piyavechvirat\
+GitHub: https://github.com/NattakittiP
+Email: Ohm19nattakitti@gmail.com
 
-
+For collaboration, issues, or methodological discussion, please open an
+Issue or Pull Request.
