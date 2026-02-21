@@ -1,0 +1,2 @@
+fold,model,cutoff_tg4h,auroc,brier,ap,best_params
+5,logreg_l2,301.151,0.9219841269841269,0.09382863073381799,0.8744850790521617,"{""model__C"": 10.0}"
