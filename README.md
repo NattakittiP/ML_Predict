@@ -67,14 +67,14 @@ biomarkers and TG4h measurements.
 
 ## Required Features
 
-  Category         Variables
-  ---------------- --------------------------
-  Demographic      Age, Sex
-  Hematologic      Hematocrit, TotalProtein
-  Derived          WBV
-  Lipid            TG0h, HDL, LDL
-  Anthropometric   BMI
-  Target           TG4h
+| Category         | Variables                         |
+|------------------|-----------------------------------|
+| Demographic      | Age, Sex                          |
+| Hematologic      | Hematocrit, TotalProtein          |
+| Derived          | WBV                               |
+| Lipid            | TG0h, HDL, LDL                    |
+| Anthropometric   | BMI                               |
+| Target           | TG4h                              |
 
 ## WBV Derivation
 
@@ -90,45 +90,46 @@ Flexible column names are automatically mapped during loading.
 
 # 3. End-to-End Workflow
 
-Load Dataset\
-      ↓\
-Normalize Sex coding\
-      ↓\
-Derive WBV and TGR\
-      ↓\
-Physiologic exclusions\
-      ↓\
-Define TG4h phenotype (primary: 75th percentile)\
-      ↓\
-Nested CV (5×5; fold-specific cutoff)\
-      ↓\
-OOF predictions + metrics\
-      ↓\
-Threshold sensitivity analysis\
-      ↓\
-Calibration (OOF + held-out comparison)\
-      ↓\
-Explainability (SHAP + PDP)\
-      ↓\
-Bootstrap CI (1,000×)\
-      ↓\
-Repeated CV (5×10)\
-      ↓\
-Baseline comparisons\
-      ↓\
-Decision Curve Analysis\
-      ↓\
-Demographic pseudo-external transfer\
-      ↓\
-External synthetic stress test\
-      ↓\
-WBV misspecification sensitivity\
-      ↓\
+```text
+Load Dataset
+      ↓
+Normalize Sex coding
+      ↓
+Derive WBV and TGR
+      ↓
+Physiologic exclusions
+      ↓
+Define TG4h phenotype (primary: 75th percentile)
+      ↓
+Nested CV (5×5; fold-specific cutoff)
+      ↓
+OOF predictions + metrics
+      ↓
+Threshold sensitivity analysis
+      ↓
+Calibration (OOF + held-out comparison)
+      ↓
+Explainability (SHAP + PDP)
+      ↓
+Bootstrap CI (1,000×)
+      ↓
+Repeated CV (5×10)
+      ↓
+Baseline comparisons
+      ↓
+Decision Curve Analysis
+      ↓
+Demographic pseudo-external transfer
+      ↓
+External synthetic stress test
+      ↓
+WBV misspecification sensitivity
+      ↓
 LaTeX-ready outputs
 
 All TG4h thresholds are computed from training indices only within CV
 splits.
-
+```
 ------------------------------------------------------------------------
 
 # 4. Model Family
@@ -144,10 +145,10 @@ L2-Penalized Logistic Regression
 
 ## Optional Comparison Models
 
-  Key       Model
-  --------- ---------------------------
-  svm_rbf   RBF SVM
-  rf        Random Forest (600 trees)
+| Key     | Model                      |
+|---------|----------------------------|
+| svm_rbf | RBF SVM                    |
+| rf      | Random Forest (600 trees)  |
 
 The manuscript-aligned emphasis remains on the interpretable
 L2-penalized logistic regression.
@@ -293,10 +294,10 @@ All derived from the final full-data LR model.
 
 # 12. Baselines
 
-  Baseline               Description
-  ---------------------- ---------------------------
-  TG0h percentile rule   75th percentile threshold
-  TG0h-only logistic     Nested CV univariate LR
+| Baseline              | Description                     |
+|-----------------------|---------------------------------|
+| TG0h percentile rule  | 75th percentile threshold       |
+| TG0h-only logistic    | Nested CV univariate LR         |
 
 Used in performance tables and DCA.
 
@@ -382,18 +383,18 @@ From raw CSV to LaTeX tables, the workflow is fully repeatable.
 # 17. Citation
 
 If using this repository:
-
-Piyavechvirat, N.\
-ML_Predict: A Calibrated Multi-Threshold Logistic Regression Pipeline\
-for Postprandial Lipid Response Analysis.\
+```text
+Piyavechvirat, N.
+ML_Predict: A Calibrated Multi-Threshold Logistic Regression Pipeline
+for Postprandial Lipid Response Analysis.
 GitHub Repository, 2025.
-
+```
 ------------------------------------------------------------------------
 
 # 18. Contact
 
 Author: Nattakitti Piyavechvirat\
-GitHub: https://github.com/NattakittiP
+GitHub: https://github.com/NattakittiP\
 Email: Ohm19nattakitti@gmail.com
 
 For collaboration, issues, or methodological discussion, please open an
