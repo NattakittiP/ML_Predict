@@ -1,0 +1,51 @@
+  & Total synthetic adult records & $n = 1,500$ \\
+  & Normal responders (TG$_{4h}$ below 75th percentile) & $n = 1,125$ (75\%) \\
+  & High responders (TG$_{4h}$ $\ge$ 75th percentile) & $n = 375$ (25\%) \\
+  & Primary TG$_{4h}$ cut-off (75th percentile) & $329.2875\,\mathrm{mg/dL}$ \\
+  & Exclusion thresholds & TG > 1500 mg/dL; WBV < 3 or > 10 cP \\
+  & Female, $n$ (\%) & Normal: 587 (52.1778\%); High: 198 (52.8000\%); $p = 0.8814$ \\
+  & Male, $n$ (\%) & Normal: 538 (47.8222\%); High: 177 (47.2000\%); $p = 0.8814$ \\
+  & Age (years) & Normal: $52.5006 \pm 10.1075$; High: $52.8123 \pm 10.0940$; $p = $0.6049$$ \\
+  & Hematocrit (\%) & Normal: $42.4550 \pm 3.6790$; High: $42.3444 \pm 3.7145$; $p = $0.6169$$ \\
+  & Total protein (g/dL) & Normal: $6.9850 \pm 0.5083$; High: $7.0252 \pm 0.4609$; $p = $0.1545$$ \\
+  & Whole blood viscosity (cP) & Normal: $5.9302 \pm 0.4507$; High: $5.9237 \pm 0.4583$; $p = $0.8132$$ \\
+  & Fasting TG (TG$_{0h}$, mg/dL) & Normal: $115.4315 \pm 48.1690$; High: $260.5150 \pm 111.8678$; $p = $< 0.0001$$ \\
+  & 4-h TG (TG$_{4h}$, mg/dL) & Normal: $196.4350 \pm 67.0377$; High: $479.1696 \pm 156.9677$; $p = $< 0.0001$$ \\
+  & postprandial triglyceride response ratio (TGR, \%) & Normal: $81.6243 \pm 59.8134$; High: $103.4164 \pm 76.1138$; $p = $< 0.0001$$ \\
+  & HDL-C (mg/dL) & Normal: $51.9716 \pm 6.2670$; High: $50.3304 \pm 6.3310$; $p = $< 0.0001$$ \\
+  & LDL-C (mg/dL) & Normal: $123.2001 \pm 25.5565$; High: $124.1301 \pm 28.4537$; $p = $0.5744$$ \\
+  & BMI (kg/m$^2$) & Normal: $23.7556 \pm 2.9612$; High: $24.8269 \pm 2.7599$; $p = $< 0.0001$$ \\
+  & WBV--TGR linear association & Pearson $r = -0.0104$; $p = 0.6881$; $R^2 = 0.0001$ \\
+  & WBV vs.\ TG$_{0h}$ & Pearson $r = -0.0055$ \\
+  & WBV vs.\ TG$_{4h}$ & Pearson $r = -0.0156$ \\
+  & TG$_{0h}$ vs.\ TGR & Pearson $r = -0.2737$ \\
+  & Qualitative summary & WBV shows negligible correlation with lipid markers and TGR \\
+  & 5\% relative error in WBV model & corr(WBV, TGR): mean -0.01039 (SD 0.0149); AUROC(WBV-only): mean 0.4746 (SD 0.0154) \\
+  & 10\% relative error in WBV model & corr(WBV, TGR): mean -0.00876 (SD 0.0216); AUROC(WBV-only): mean 0.4864 (SD 0.0205) \\
+  & Interpretation & Even under misspecification, WBV shows no discriminative value for TGR \\
+  & TG$_{0h}$ 75th percentile cut-off & Threshold: $189.2675\,\mathrm{mg/dL}$; AUROC $0.8204$; Brier $0.1347$ \\
+  & Univariate logistic regression (TG$_{0h}$ only) & AUROC $0.9167$; Brier $0.1243$; F1-score $0.7444$; recall $0.7899$; precision $0.7038$ \\
+  & Multivariable L2-penalized logistic regression & AUROC $0.9142$; Brier $0.1100$; F1-score $0.7398$; recall $0.8165$; precision $0.6762$ \\
+  & Nested CV configuration & Stratified 5 x 5 nested cross-validation on primary TG4h 75th percentile phenotype \\
+  & Nested CV (primary task) & Mean AUROC $0.9152$ (SD $0.0200$); mean Brier $0.1100 \pm 0.0087$ \\
+  & Bootstrap (1,000 resamples) & AUROC mean $0.9140$ (95\% CI $[0.8958, 0.9315]$); Brier mean $0.1101$ (95\% CI $[0.1007, 0.1196]$) \\
+  & Repeated 5-fold CV (10$\times$ repeats) & AUROC $0.9151 \pm 0.0156$ (min $0.8811$, max $0.9461$); Brier $0.1104 \pm 0.0084$ (min $0.0879$, max $0.1264$) \\
+  & Isotonic calibration (held-out) & AUROC $0.9237$; Brier score $0.0847$ \\
+  & Platt (sigmoid) calibration (held-out) & AUROC $0.9259$; Brier score $0.0835$ \\
+  & Final chosen calibration & Isotonic (selected for best balance of discrimination and Brier score) \\
+  & Calibration curve (primary model) & Slope $\approx 0.0443$; intercept $\approx 0.3482$ \\
+  & 60th percentile TG$_{4h}$ & Cut-off $261.7900\,\mathrm{mg/dL}$; AUROC $0.9212$; Brier $0.1091$; F1 $0.8033$; recall $0.8053$; precision $0.8013$ \\
+  & 70th percentile TG$_{4h}$ & Cut-off $301.0580\,\mathrm{mg/dL}$; AUROC $0.9228$; Brier $0.1054$; F1 $0.7700$; recall $0.8093$; precision $0.7344$ \\
+  & 75th percentile TG$_{4h}$ (primary) & Cut-off $329.2875\,\mathrm{mg/dL}$; AUROC $0.9142$; Brier $0.1100$; F1 $0.7398$; recall $0.8165$; precision $0.6762$ \\
+  & 80th percentile TG$_{4h}$ & Cut-off $365.2400\,\mathrm{mg/dL}$; AUROC $0.9167$; Brier $0.1075$; F1 $0.6942$; recall $0.8133$; precision $0.6055$ \\
+  & 90th percentile TG$_{4h}$ & Cut-off $458.1810\,\mathrm{mg/dL}$; AUROC $0.9175$; Brier $0.1049$; F1 $0.5766$; recall $0.8477$; precision $0.4369$ \\
+  & Summary & AUROC remains $\approx 0.80$ for 60--80th percentiles; WBV has negligible influence at all thresholds \\
+  & Remove TG$_{0h}$ & AUROC $0.60$ \\
+  & Remove BMI & AUROC $0.91$ \\
+  & Remove WBV & AUROC $0.91$ (no change vs. full model) \\
+  & Original synthetic cohort (internal, external-synthetic setting) & (not computed: provide EXTERNAL_PATH if needed) \\
+  & Independent external synthetic cohort (uncalibrated) & (not computed: provide EXTERNAL_PATH if needed) \\
+  & After three-layer calibration on external-synthetic transfer & (not computed: provide EXTERNAL_PATH if needed) \\
+  & Logistic regression (L2) hyperparameters & $C \in \{0.01, 0.1, 1, 10\}$; penalty $\ell_2$; solver \texttt{lbfgs}; max\_iter $= 500$ \\
+  & Random forest hyperparameters & $n\_\text{estimators} \in \{200, 400, 800\}$; max\_depth $\in \{\text{None}, 6, 12\}$; min\_samples\_leaf $\in \{1, 2, 4\}$ \\
+  & SVM (RBF) hyperparameters \& CV details & $C \in \{0.1, 1, 10\}$; $\gamma \in \{\text{scale}, 0.1, 0.01\}$; stratified nested 5-fold outer / 5-fold inner CV; global random seed $= 42$ \\

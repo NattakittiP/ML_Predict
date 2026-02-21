@@ -1,0 +1,5 @@
+ corr_WBV_TGR           AUROC_WBV_only
+                mean       std           mean       std
+rel_std
+0.05       -0.010386  0.014876       0.495150  0.009827
+0.10       -0.007311  0.019562       0.496816  0.014133

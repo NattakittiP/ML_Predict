@@ -1,0 +1,10 @@
+=== INTERNAL (5-fold CV on training cohort; uncalibrated) ===
+TG4h p75 cutoff (train): 329.2875 mg/dL
+AUROC: 0.9162
+Brier: 0.0880
+
+=== EXTERNAL (independent synthetic cohort; stress test) ===
+TG4h p75 cutoff (external): 370.8733 mg/dL
+Uncalibrated  AUROC: 0.9236 | Brier: 0.0994
+Calibrated    AUROC: 0.9225 | Brier: 0.1028
+Temperature (T) used for scaling: 0.9913
